@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hbb/common/widgets/address_book.dart';
+import 'package:flutter_hbb/common/widgets/local_address_book.dart';
 import 'package:flutter_hbb/common/widgets/dialog.dart';
 import 'package:flutter_hbb/common/widgets/my_group.dart';
 import 'package:flutter_hbb/common/widgets/peers_view.dart';
@@ -66,6 +67,7 @@ class _PeerTabPageState extends State<PeerTabPage>
       ),
       ({dynamic hint}) => gFFI.groupModel.pull(force: hint == null),
     ),
+    _TabEntry(const LocalAddressBook()),
   ];
   RelativeRect? mobileTabContextMenuPos;
 
@@ -89,6 +91,9 @@ class _PeerTabPageState extends State<PeerTabPage>
   }
 
   Future<void> handleTabSelection(int tabIndex) async {
+    if (tabIndex == kLocalBookTabIndex) {
+      gFFI.peerTabModel.setMultiSelectionMode(false);
+    }
     if (tabIndex < entries.length) {
       if (tabIndex != gFFI.peerTabModel.currentTab) {
         gFFI.peerTabModel.setCurrentTabCachedPeers([]);
@@ -551,6 +556,7 @@ class _PeerTabPageState extends State<PeerTabPage>
 
   List<Widget> _landscapeRightActions(BuildContext context) {
     final model = Provider.of<PeerTabModel>(context);
+    if (model.currentTab == kLocalBookTabIndex) return [];
     return [
       const PeerSearchBar().marginOnly(right: 13),
       _createRefresh(
@@ -575,6 +581,7 @@ class _PeerTabPageState extends State<PeerTabPage>
 
   List<Widget> _portraitRightActions(BuildContext context) {
     final model = Provider.of<PeerTabModel>(context);
+    if (model.currentTab == kLocalBookTabIndex) return [];
     final screenWidth = MediaQuery.of(context).size.width;
     final leftIconSize = Theme.of(context).iconTheme.size ?? 24;
     final leftActionsSize =
